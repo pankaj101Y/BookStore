@@ -16,6 +16,7 @@ import com.example.ks.bookstore.Book;
 import com.example.ks.bookstore.Networking.AddBookTask;
 import com.example.ks.bookstore.Networking.UpdateBookTask;
 import com.example.ks.bookstore.R;
+import com.example.ks.bookstore.Utility.Constants;
 import com.example.ks.bookstore.Utility.Utility;
 
 public class BookActivity extends AppCompatActivity {
@@ -39,9 +40,13 @@ public class BookActivity extends AppCompatActivity {
         Button update=findViewById(R.id.updateBook);
         Button addBook=findViewById(R.id.addBook);
         book=null;
-        String id=getIntent().getStringExtra("id");
-        if (id!=null){
+        int  index=getIntent().getIntExtra("index", Constants.NO_BOOK);
+        if (index!=Constants.NO_BOOK){
             addBook.setVisibility(View.GONE);
+            book=BookListActivity.getMyBooks().get(index);
+            nameView.setText(book.getName());
+            authorView.setText(book.getAuthor());
+            tagView.setText(book.getTag());
         }else update.setVisibility(View.GONE);
     }
 

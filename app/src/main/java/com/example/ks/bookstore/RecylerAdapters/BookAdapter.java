@@ -2,7 +2,6 @@ package com.example.ks.bookstore.RecylerAdapters;
 
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +13,8 @@ import com.example.ks.bookstore.Book;
 import com.example.ks.bookstore.MainActivity;
 import com.example.ks.bookstore.Networking.DeleteBookTask;
 import com.example.ks.bookstore.Networking.GetBooksTask;
+import com.example.ks.bookstore.Networking.GetMyBooksTask;
+import com.example.ks.bookstore.Networking.GetMyWishList;
 import com.example.ks.bookstore.Networking.RemoveBookTask;
 import com.example.ks.bookstore.R;
 import com.example.ks.bookstore.UI.BookViewActivity;
@@ -43,7 +44,6 @@ BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         if (viewType == ViewType.ITEM) {
             return new BookViewHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.single_book_view,parent,false));
         } else if (viewType == ViewType.FOOTER) {
-            Log.e("debug","footer view");
             return new FooterViewHolder(new ProgressBar(parent.getContext()));
         }
         return null;
@@ -97,18 +97,49 @@ BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     }
                 });
             }
-        }else if (holder instanceof FooterViewHolder && contentType==Constants.ONLINE_BOOKS) {
-            MainActivity.getAndShowOnlineBooks(new GetBooksTask.GetBooksListener() {
-                @Override
-                public void onBooksReceived(ArrayList<Book> result) {
-                    showOnlineBooks(result);
+        }else if (holder instanceof FooterViewHolder) {
+            if (contentType==Constants.ONLINE_BOOKS){
+                MainActivity.getAndShowOnlineBooks(new GetBooksTask.GetBooksListener() {
+                    @Override
+                    public void onBooksReceived(ArrayList<Book> result) {
+                        removeProgressBar();
+                        showBooks(result);
                 }
 
-                @Override
-                public void onBooksNotReceived() {
+                    @Override
+                    public void onBooksNotReceived() {
                     removeProgressBar();
                 }
-            });
+                });
+            }if (contentType== Constants.MY_BOOKS){
+                GetMyBooksTask myBooksTask=new GetMyBooksTask(new GetMyBooksTask.GetMyBooksListener() {
+                    @Override
+                    public void onMyBooksReceived(ArrayList<Book> result) {
+                        removeProgressBar();
+                        showBooks(result);
+                    }
+
+                    @Override
+                    public void onMyBooksNotReceived() {
+                        removeProgressBar();
+                    }
+                });
+                myBooksTask.execute(AppData.getServerId(holder.itemView.getContext()));
+            }else if (contentType==Constants.WISH_LIST_BOOKS){
+                GetMyWishList wishListTask =new GetMyWishList(new GetMyWishList.GetMyWishListListener() {
+                    @Override
+                    public void onMyWishListReceived(ArrayList<Book> result) {
+                        removeProgressBar();
+                        showBooks(result);
+                    }
+
+                    @Override
+                    public void onMyWishListNotReceived() {
+                        removeProgressBar();
+                    }
+                });
+                wishListTask.execute(AppData.getServerId(holder.itemView.getContext()));
+            }
         }
     }
 
@@ -125,7 +156,7 @@ BookAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return books.size()+ progressbarDecider;//+1 for footer
     }
 
-    public void showOnlineBooks(ArrayList<Book>onlineBooks){
+    public void showBooks(ArrayList<Book>onlineBooks){
         int start=onlineBooks.size();
         books.addAll(onlineBooks);
         notifyItemChanged(start,onlineBooks.size());

@@ -15,15 +15,14 @@ import com.example.ks.bookstore.RecylerAdapters.BookAdapter;
 import com.example.ks.bookstore.Utility.Constants;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 
 public class BookListActivity extends AppCompatActivity {
     private RecyclerView bookListRecycler;
     private GridLayoutManager gridLayoutManager;
     private BookAdapter bookAdapter;
-    private static ArrayList<Book>myBooks=new ArrayList<>();
-    private static ArrayList<Book>myWishList=new ArrayList<>();
-    private GetMyBooksTask myBooksTask;
-    private GetMyWishList wishListTask;
+    int type;
+    private static ArrayList<Book>books=new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,63 +32,20 @@ public class BookListActivity extends AppCompatActivity {
         bookListRecycler =findViewById(R.id.bookListRecycler);
         final int resolve;
         resolve=getIntent().getIntExtra("resolve",-1);
-        myBooks.clear();
-        myWishList.clear();
+        if (resolve==Constants.MY_BOOKS)
+            type=Constants.MY_BOOKS;
+        else if (resolve==Constants.WISH_LIST_BOOKS)
+            type=Constants.WISH_LIST_BOOKS;
 
-        if (resolve== Constants.MY_BOOKS){
-            bookAdapter=new BookAdapter(myBooks,Constants.MY_BOOKS);
-            myBooksTask=new GetMyBooksTask(new GetMyBooksTask.GetMyBooksListener() {
-                @Override
-                public void onMyBooksReceived(ArrayList<Book> result) {
-                    myBooks.addAll(result);
-                    bookAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onMyBooksNotReceived() {
-
-                }
-            });
-            myBooksTask.execute(AppData.getServerId(this));
-        }else if (resolve==Constants.WISH_LIST_BOOKS){
-            bookAdapter=new BookAdapter(myWishList,Constants.WISH_LIST_BOOKS);
-            wishListTask =new GetMyWishList(new GetMyWishList.GetMyWishListListener() {
-                @Override
-                public void onMyWishListReceived(ArrayList<Book> result) {
-                    myWishList.addAll(result);
-                    bookAdapter.notifyDataSetChanged();
-                }
-
-                @Override
-                public void onMyWishListNotReceived() {
-
-                }
-            });
-            wishListTask.execute(AppData.getServerId(this));
-        }
+        books.clear();
+        bookAdapter=new BookAdapter(books,type);
         gridLayoutManager =new GridLayoutManager(this,1);
         bookListRecycler.setLayoutManager(gridLayoutManager);
         bookListRecycler.setAdapter(bookAdapter);
     }
 
-    @Override
-    public void finish() {
-        super.finish();
-        if (myBooksTask!=null&&myBooksTask.getStatus()!=AsyncTask.Status.FINISHED)
-            myBooksTask.cancel(true);
 
-        if (wishListTask !=null&& wishListTask.getStatus()!=AsyncTask.Status.FINISHED)
-            wishListTask.cancel(true);
-
-        myBooksTask=null;
-        wishListTask =null;
-    }
-
-    public static ArrayList<Book> getMyBooks() {
-        return myBooks;
-    }
-
-    public static ArrayList<Book> getMyWishList() {
-        return myWishList;
+    public static Book getMyBook(int pos) {
+        return books.get(pos);
     }
 }

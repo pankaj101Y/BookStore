@@ -48,12 +48,12 @@ public class BookViewActivity extends AppCompatActivity {
 
         if (index !=NO_BOOK){
             if (resolve==MY_BOOKS){
-                b=BookListActivity.getMyBooks().get(index);
+                b=BookListActivity.getMyBook(index);
                 saveBookView.setVisibility(View.GONE);
                 bookUserProfileView.setVisibility(View.GONE);
             }
             else if (resolve== WISH_LIST_BOOKS){
-               b=BookListActivity.getMyWishList().get(index);
+               b=BookListActivity.getMyBook(index);
                 saveBookView.setVisibility(View.GONE);
             }
             else if (resolve== ONLINE_BOOKS)

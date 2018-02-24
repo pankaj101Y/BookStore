@@ -194,7 +194,7 @@ public class LoginActivity extends AppCompatActivity {
                     result=new String[3];
                     result[0]=object.getString("name");
                     result[1]=object.getString("no");
-                    result[2]=object.getString("_id");
+                    result[2]=object.getString("id");
                 }
              } catch (MalformedURLException ignored) {
                 return null;

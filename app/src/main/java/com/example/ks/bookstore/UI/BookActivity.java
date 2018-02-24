@@ -43,7 +43,7 @@ public class BookActivity extends AppCompatActivity {
         int  index=getIntent().getIntExtra("index", Constants.NO_BOOK);
         if (index!=Constants.NO_BOOK){
             addBook.setVisibility(View.GONE);
-            book=BookListActivity.getMyBooks().get(index);
+            book=BookListActivity.getMyBook(index);
             nameView.setText(book.getName());
             authorView.setText(book.getAuthor());
             tagView.setText(book.getTag());

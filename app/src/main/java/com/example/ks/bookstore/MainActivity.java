@@ -197,7 +197,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getAndShowOnlineBooks(new GetBooksTask.GetBooksListener() {
             @Override
             public void onBooksReceived(ArrayList<Book> result) {
-                liveContentAdapter.showOnlineBooks(result);
+                liveContentAdapter.showBooks(result);
             }
 
             @Override
